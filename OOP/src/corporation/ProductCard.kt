@@ -1,9 +1,11 @@
 package corporation
 
-class ProductCard(
-    var name: String,
-    var brand: String,
-    var size: Float,
-    var price: Int
+open class ProductCard(
+    val name: String,
+    val brand: String,
+    val price: Int
 ) {
+    open fun printInfo(){
+        print("Name: $name Brand: $brand Price: $price ")
+    }
 }
