@@ -1,6 +1,8 @@
+package profile
+
 fun main(){
-    val first = Person()
-    val second = Person()
+    val first = Person("", 2, 2, 2)
+    val second = Person("", 2, 2, 2)
 
     print("Input 1st age: ")
     val personAgeFirst = readln().toInt()
@@ -32,8 +34,8 @@ fun main(){
 //    first.run()
 //    second.run()
 
-    first.init(name = personNameFirst, age = personAgeFirst, weight = personWeightFirst, height = personHeightFirst)
-    second.init(name = personNameSecond, age = personAgeSecond, weight = personWeightSecond, height = personHeightSecond)
+//    first.init(name = personNameFirst, age = personAgeFirst, weight = personWeightFirst, height = personHeightFirst)
+//    second.init(name = personNameSecond, age = personAgeSecond, weight = personWeightSecond, height = personHeightSecond)
     first.showInfo()
     second.showInfo()
 }
