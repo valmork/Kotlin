@@ -1,5 +1,7 @@
 package homework
 
+import java.io.File
+
 class Car {
     val brand: String
     val model: String
@@ -55,3 +57,26 @@ fun task() {
     car.printInfo()
 //    car.refuel(AZS, markCar, countedLiters)
 }
+
+// задача для урока 3.16
+//class Car(
+//    val make: String,
+//    val model: String,
+//    val year: Int,
+//    val vin: String,
+//    val color: String,
+//)
+//
+//fun serialize(car: Car): String {
+//    return "${car.make}%${car.model}%${car.year}%${car.vin}%${car.color}"
+//}
+//
+//fun deserialize(carAsString: String): Car {
+//    val parameters = carAsString.split("%")
+//    val make = parameters[0]
+//    val model = parameters[1]
+//    val year = parameters[2].toInt()
+//    val vin = parameters[3]
+//    val color = parameters[4]
+//    Car(make, model, year, vin, color)
+//}
