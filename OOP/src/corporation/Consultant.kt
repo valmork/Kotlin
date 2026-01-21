@@ -3,9 +3,10 @@ package corporation
 import kotlin.random.Random
 
 class Consultant(
+    id: Int,
     name: String,
     age: Int = 0
-): Worker(name = name, age = age) {
+): Worker(id = id, name = name, age = age, position = Position.CONSULTANT) {
 
     fun sayHello(){
         print("Привет! Меня зовут ${this.name}.")
