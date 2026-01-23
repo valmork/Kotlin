@@ -1,15 +1,25 @@
 package corporation
 
 import java.io.File
+import java.sql.SQLOutput
 
 class Accountant(
     id: Int,
     name: String,
     age: Int
-): Worker(id, name, age, Position.ACCOUNTANT) {
+): Worker(id, name, age, Position.ACCOUNTANT), Cleaner, Supplier {
 
     val fileProductCards = File("product_cards.txt")
     val fileWorkers = File("workers.txt")
+
+    override fun buyThings() {
+        println("My position is accountant. I am buying something...")
+    }
+
+    override fun clean() {
+        println("My position is accountant. I am cleaning my workplace")
+    }
+
 
     override fun work() {
         var isExit: Boolean = false
