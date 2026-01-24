@@ -3,8 +3,15 @@ package corporation
 class Assistant(
     id: Int,
     name: String,
-    age: Int = 0
-): Worker(id = id, name = name, age = age, position = Position.ASSISTANT), Cleaner, Supplier {
+    age: Int = 0,
+    salary: Int
+): Worker(
+    id = id,
+    name = name,
+    age = age,
+    position = Position.ASSISTANT,
+    salary = salary
+), Cleaner, Supplier {
 
     override fun buyThings() {
         println("My position is assistant. I am buying something...")

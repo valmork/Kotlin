@@ -1,18 +1,14 @@
 package gui
 
-class Rectangle {
-    val height: Int
-    val width: Int
+class Rectangle(
+    var height: Int = 0,
+    var width: Int = 0
+) {
 
-    constructor(length: Int, width: Int) {
-        this.height = length
-        this.width = width
-    }
+    val area: Int
+        get() = width * height
 
-    constructor(size: Int){
-        this.height = size
-        this.width = size
-    }
+    constructor(size: Int): this(size, size)
 
 
     fun draw(width: Int, height: Int){

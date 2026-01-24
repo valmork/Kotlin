@@ -6,8 +6,15 @@ import java.sql.SQLOutput
 class Accountant(
     id: Int,
     name: String,
-    age: Int
-): Worker(id, name, age, Position.ACCOUNTANT), Cleaner, Supplier {
+    age: Int,
+    salary: Int
+): Worker(
+    id = id,
+    name = name,
+    age = age,
+    salary = salary,
+    position = Position.ACCOUNTANT
+), Cleaner, Supplier {
 
     val fileProductCards = File("product_cards.txt")
     val fileWorkers = File("workers.txt")
@@ -29,7 +36,6 @@ class Accountant(
             for ((index, code) in operationCodeTypes.withIndex()) {
                 print("$index - ${code.title}\n")
             }
-            print("Enter the operation code. 0 - exit, 1 - register new item: ")
             val choice = readln().toInt()
             val operationCodeChoice: OperationCode = operationCodeTypes[choice]
             when (operationCodeChoice){
@@ -40,8 +46,25 @@ class Accountant(
                 OperationCode.REGISTER_NEW_EMPLOYEE -> registerNewEmployee()
                 OperationCode.FIRE_EMPLOYEE -> fireEmployee()
                 OperationCode.SHOW_ALL_EMPLOYEES -> showAllEmployees()
+                OperationCode.CHANGE_SALARY -> changeSalary()
                 else -> println("Incorrect input")
             }
+        }
+    }
+
+    private fun changeSalary(){
+        print("Enter employee's id to change salary: ")
+        val id = readln().toInt()
+        print("Enter new salary: ")
+        val salary = readln().toInt()
+        val employees = loadAllEmployees()
+        fileWorkers.writeText("")
+
+        for (employee in employees){
+            if (id == employee.id){
+                employee.setSalary(salary)
+            }
+            saveWorkerToFile(employee)
         }
     }
 
@@ -64,11 +87,13 @@ class Accountant(
         val name = readln()
         print("Enter age: ")
         val age = readln().toInt()
+        print("Enter salary: ")
+        val salary = readln().toInt()
         val worker = when(position){
-            Position.DIRECTOR -> Director(id, name, age)
-            Position.ACCOUNTANT -> Accountant(id, name, age)
-            Position.ASSISTANT -> Assistant(id, name, age)
-            Position.CONSULTANT -> Consultant(id, name, age)
+            Position.DIRECTOR -> Director(id, name, age, salary)
+            Position.ACCOUNTANT -> Accountant(id, name, age, salary)
+            Position.ASSISTANT -> Assistant(id, name, age, salary)
+            Position.CONSULTANT -> Consultant(id, name, age, salary)
         }
         saveWorkerToFile(worker)
     }
@@ -85,7 +110,6 @@ class Accountant(
             }
         }
         fileWorkers.writeText("")
-
     }
 
     fun showAllEmployees(){
@@ -110,13 +134,14 @@ class Accountant(
             val id = propetries[0].toInt()
             val name = propetries[1]
             val age = propetries[2].toInt()
+            val salary = propetries[3].toInt()
             val positionAsText = propetries.last()
             val position = Position.valueOf(positionAsText)
             val worker = when(position){
-                Position.DIRECTOR -> Director(id, name, age)
-                Position.ACCOUNTANT -> Accountant(id, name, age)
-                Position.ASSISTANT -> Assistant(id, name, age)
-                Position.CONSULTANT -> Consultant(id, name, age)
+                Position.DIRECTOR -> Director(id, name, age, salary)
+                Position.ACCOUNTANT -> Accountant(id, name, age, salary)
+                Position.ASSISTANT -> Assistant(id, name, age, salary)
+                Position.CONSULTANT -> Consultant(id, name, age, salary)
             }
             employees.add(worker)
         }
@@ -124,7 +149,7 @@ class Accountant(
     }
 
     fun saveWorkerToFile(worker: Worker){
-        fileWorkers.appendText("${worker.id}%${worker.name}%${worker.age}%${worker.position}\n")
+        fileWorkers.appendText("${worker.id}%${worker.name}%${worker.age}%${worker.getSalary()}%${worker.position}\n")
     }
 
     fun loadAllCards(): MutableList<ProductCard> {
