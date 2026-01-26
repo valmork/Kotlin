@@ -1,19 +1,16 @@
 package homework
 
+import kotlin.system.measureTimeMillis
+
 fun main(){
-    val encryptor = Encryptor()
 
-    println(encryptor.process("sensitive data"))
+        val testLines = List(10000) { "Line $it" }
+        val merger = TextMerger()
 
-    println(encryptor.transform("sensitive data"))
+        val time = measureTimeMillis {
+                val result = merger.mergeText(testLines)
+                println("Length: ${result.length}")
+        }
 
-    val compressor = Compressor()
-
-    println(compressor.process("large data"))
-
-    println(compressor.transform("large data"))
-
-    val logger = Logger()
-
-    println(logger.process("log data"))
+        println("Time: $time ms")
 }
