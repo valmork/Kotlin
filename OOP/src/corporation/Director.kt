@@ -17,6 +17,10 @@ class Director(
         println("My position is director. I am buying something...")
     }
 
+    override fun copy(salary: Int, age: Int): Director {
+        return Director(this.id, this.name, age, salary)
+    }
+
     fun takeCoffee(assistant: Assistant){
         val drinkName: String = assistant.bringCoffee()
         println("Thank you ${assistant.name}! The @drinkName is very tasty!")

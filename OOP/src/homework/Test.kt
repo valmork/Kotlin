@@ -1,16 +1,17 @@
 package homework
 
-import kotlin.system.measureTimeMillis
+fun main() {
 
-fun main(){
+    val employee = Employee(1, "Алексей")
+    val task = Task(1, "Создание макета", "Создать макет страницы", "Алексей", "Назначена", "Высокий")
 
-        val testLines = List(10000) { "Line $it" }
-        val merger = TextMerger()
+    employee.addTask(task)
 
-        val time = measureTimeMillis {
-                val result = merger.mergeText(testLines)
-                println("Length: ${result.length}")
-        }
+    println(employee.tasks[0].title)
+    println(employee.tasks[0].description)
 
-        println("Time: $time ms")
+    employee.modifyTaskDetails(1, "Обновленный макет", "Создать новый макет страницы")
+
+    println(employee.tasks[0].title)
+    println(employee.tasks[0].description)
 }

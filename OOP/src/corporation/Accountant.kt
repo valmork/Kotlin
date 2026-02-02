@@ -24,6 +24,9 @@ class Accountant(
         println("My position is accountant. I am cleaning my workplace")
     }
 
+    override fun copy(salary: Int, age: Int): Accountant {
+        return Accountant(this.id, this.name, age, salary)
+    }
 
     override fun work() {
         var isExit: Boolean = false
@@ -48,9 +51,18 @@ class Accountant(
                 OperationCode.FIRE_EMPLOYEE -> fireEmployee()
                 OperationCode.SHOW_ALL_EMPLOYEES -> showAllEmployees()
                 OperationCode.CHANGE_SALARY -> changeSalary()
+                OperationCode.CHANGE_AGE -> changeAge()
                 else -> println("Incorrect input")
             }
         }
+    }
+
+    private fun changeAge(){
+        print("Enter employee's id to change age: ")
+        val id = readln().toInt()
+        print("Enter new age: ")
+        val age = readln().toInt()
+        workersRepository.changeAge(id, age)
     }
 
     private fun changeSalary(){

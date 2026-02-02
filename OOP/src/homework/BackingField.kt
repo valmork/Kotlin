@@ -4,7 +4,7 @@ package homework
 data class Book(val title: String, val author: String)
 
 // User.kt
-data class User(val name: String, val id: Int)
+//data class User(val name: String, val id: Int)
 
 // Library.kt
 class Library(val libraryName: String) {
