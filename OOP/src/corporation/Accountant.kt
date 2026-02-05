@@ -1,10 +1,10 @@
 package corporation
 
-class Accountant(
-    id: Int,
-    name: String,
-    age: Int,
-    salary: Int
+data class Accountant(
+    override val id: Int,
+    override val name: String,
+    override val age: Int,
+    override val salary: Int
 ): Worker(
     id = id,
     name = name,
@@ -24,8 +24,14 @@ class Accountant(
         println("My position is accountant. I am cleaning my workplace")
     }
 
-    override fun copy(salary: Int, age: Int): Accountant {
-        return Accountant(this.id, this.name, age, salary)
+    override fun copy(
+        id: Int,
+        name: String,
+        salary: Int,
+        age: Int,
+        position: Position
+    ): Worker {
+        return copy(id = id, name = name, age = age, salary = salary)
     }
 
     override fun work() {
@@ -119,40 +125,15 @@ class Accountant(
 
 
     fun showAllItems(){
-        val content = productCardsRepository.fileProductCards.readText().trim()
+        val cards = productCardsRepository.productCards
 
-        if (content.isEmpty()){
+        if (cards.isEmpty()){
+            println("No product cards available")
             return
         }
 
-        val cardsAsString = content.split("\n")
-        for (cardString in cardsAsString){
-            // старая реализация
-//            val contentItems = cardString.split("%")
-//            val name = contentItems[0]
-//            val brand = contentItems[1]
-//            val price = contentItems[2].toInt()
-//            val type = contentItems.last()
-//            val productType = ProductType.valueOf(type)
-//            val productCard = when (productType){
-//                ProductType.FOOD -> {
-//                    val caloric = contentItems[3].toInt()
-//                    FoodCard(name, brand, price, caloric)
-//                }
-//                ProductType.APPLIANCE ->{
-//                    val wattage = contentItems[3].toInt()
-//                    ApplianceCard(name, brand, price, wattage)
-//                }
-//                ProductType.SHOE ->{
-//                    val size = contentItems[3].toFloat()
-//                    ShoeCard(name, brand, price, size)
-//                }
-//            }
-//            productCard.printInfo()
-            val cards = productCardsRepository.productCards
-            for (card in cards){
-                card.printInfo()
-            }
+        for (card in cards){
+            card.printInfo()
         }
     }
 
