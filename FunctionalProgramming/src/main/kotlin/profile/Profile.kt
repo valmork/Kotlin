@@ -14,7 +14,7 @@ fun main() {
 
 
 
-fun <R> List<Person>.transform(operation: (Person) -> R): List<R>{
+fun <R, T> List<T>.transform(operation: (T) -> R): List<R>{
     val result = mutableListOf<R>()
     for (person in this){
         result.add(operation(person))
@@ -22,14 +22,6 @@ fun <R> List<Person>.transform(operation: (Person) -> R): List<R>{
     return result
 }
 
-fun List<Person>.filter(isSuitable: ((Person) -> Boolean)): List<Person>{
-    val newProfiles = mutableListOf<Person>()
-    for (person in this){
-        if (isSuitable(person)){
-            newProfiles.add(person)
-        }
-    }
-    return newProfiles
-}
+
 
 
