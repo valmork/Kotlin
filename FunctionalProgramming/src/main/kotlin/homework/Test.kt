@@ -1,94 +1,31 @@
 package homework
 
-import kotlin.system.measureTimeMillis
-
 fun main() {
-    val iterationCount = 10_000_000
-
-    // --- Вспомогательные функции для замеров времени выполнения ---
-    val smallFunctionTime = measureTimeMillis {
-        var resultSum = 0
-        for (i in 0 until iterationCount) {
-            resultSum += executeOperation(i, 1) { a, b -> a + b }
-        }
-    }
-
-    val inlineSmallFunctionTime = measureTimeMillis {
-        var resultSum = 0
-        for (i in 0 until iterationCount) {
-            resultSum += inlineExecuteOperation(i, 1) { a, b -> a + b }
-        }
-    }
-
-
-    val bigFunctionTime = measureTimeMillis {
-        var resultTotal = 0
-        for (i in 0 until iterationCount) {
-            resultTotal += performComplexCalculation(i)
-        }
-    }
-
-    val inlineBigFunctionTime = measureTimeMillis {
-        var resultTotal = 0
-        for (i in 0 until iterationCount) {
-            resultTotal += inlinePerformComplexCalculation(i)
-        }
-    }
-    println("Используйте `inline` только там, где это оправданно:\nдля маленьких, часто вызываемых функций с лямбдами.\nНе злоупотребляйте — избыточное использование может раздувать байткод и усложнять оптимизацию.")
+    processStrings(listOf(" ","hello","world" ,"test","hello"," "))
 }
-
 /**
- * Маленькая функция высшего порядка (без inline).
- * Выполняет переданную лямбду operation над двумя числами.
+ * Обрабатывает коллекцию строк с использованием цепочки преобразований.
+ * @param strings Коллекция строк для обработки.
+ * @return Преобразованная коллекция строк.
  */
-fun executeOperation(a: Int, b: Int, operation: (Int, Int) -> Int): Int {
-    return operation(a, b)
-}
-
-/**
- * Маленькая inline функция высшего порядка.
- * Выполняет переданную лямбду operation над двумя числами.
- */
-inline fun inlineExecuteOperation(a: Int, b: Int, operation: (Int, Int) -> Int): Int {
-    return operation(a, b)
-}
-
-/**
- * "Большая" функция без inline.
- * Выполняет сложные вычисления с использованием массива и циклов.
- */
-fun performComplexCalculation(value: Int): Int {
-    var accumulator = value
-    val factors = IntArray(10) { it * accumulator }
-    for (i in factors.indices) {
-        accumulator += (factors[i] + i) * 3 - (accumulator % 5)
-        if (accumulator % 7 == 0) {
-            accumulator -= i
-        }
-    }
-    return if (accumulator % 2 == 0) {
-        accumulator / 2
-    } else {
-        accumulator * 2
-    }
-}
-
-/**
- * "Большая" inline функция.
- * Выполняет сложные вычисления с использованием массива и циклов.
- */
-inline fun inlinePerformComplexCalculation(value: Int): Int {
-    var accumulator = value
-    val factors = IntArray(10) { it * accumulator }
-    for (i in factors.indices) {
-        accumulator += (factors[i] + i) * 3 - (accumulator % 5)
-        if (accumulator % 7 == 0) {
-            accumulator -= i
-        }
-    }
-    return if (accumulator % 2 == 0) {
-        accumulator / 2
-    } else {
-        accumulator * 2
-    }
+fun processStrings(strings: List<String>): List<String> {
+    return strings.also {
+        println("Исходный список: $strings")
+    }.filter { it.isNotBlank() }.also {
+        println("Этап 1: Осталось ${it.count()} непустых строк")
+    }               // Убираем пустые строки
+        .map { it.trim() }                       // Убираем лишние пробелы
+        .filter { it.length > 3 }.also {
+            println("Этап 2: Строки длиной более 3 символов: $it")
+        }                  // Оставляем строки длиной больше 3
+        .sortedBy { it.length }.also {
+            println("Этап 3: Первые 3 строки после сортировки: ${it.take(3)}")
+        }                   // Сортируем по длине
+        .map { it.uppercase() }.also {
+            println("Этап 4: Все строки в верхнем регистре: $it")
+        }                   // Преобразуем в верхний регистр
+        .distinct()                               // Убираем дубликаты
+        .take(5).also {
+            println("Этап 5: Итоговый результат: $it")
+        }                                  // Берём первые 5 строк
 }

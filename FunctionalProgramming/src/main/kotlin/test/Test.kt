@@ -2,34 +2,41 @@ package test
 
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.util.Dictionary
 
 fun main() {
-    val file = File("books.json")
-    writeToFile(file)
-    val books = readFromFile(file)
-    for (book in books){
-        println(book)
-    }
+    val dictionary = mutableMapOf<String, String>(
+    )
+    dictionary["Anton"] = "89290619465"
+    dictionary["Mom"] = "89202835476"
+
+    print("Enter your name and phone number (use spaces): ")
+    val input = readln()
+    val entries = input.split(" ")
+    dictionary[entries[0]] = entries[1]
+    println(dictionary)
+    addPerson(dictionary)
+
 }
 
-fun readFromFile(file: File): List<Book> {
-    val content = file.readText().trim()
-    return Json.decodeFromString<List<Book>>(content)
-}
-
-fun writeToFile(file: File){
-    val books = mutableListOf<Book>()
-    while (true){
+fun addPerson(dictionary: Map<String, String>){
+    while (true) {
         print("Enter name or 0 to exit: ")
-        val name = readln()
-        if (name == "0") break
-        print("Enter author`s name: ")
-        val authorName = readln()
-        print("Enter year: ")
-        val year = readln().toInt()
-        val book = Book(name, authorName, year)
-        books.add(book)
+        val input = readln()
+        if (input == "0") break
+        val numbers = dictionary.values
+        println(dictionary[input] ?: "Not found")
+
+        //еще одна реализация
+//        for (name in dictionary.keys){
+//            if (input == name){
+//                println(dictionary[input])
+//                break
+//            }
+//
+//        }
+//        if (!dictionary.keys.contains(input)){
+//            println("Number not found")
+//        }
     }
-        val booksAsString = Json.encodeToString(books)
-        file.writeText(booksAsString)
 }

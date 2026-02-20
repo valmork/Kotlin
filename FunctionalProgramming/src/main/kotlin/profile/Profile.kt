@@ -1,27 +1,25 @@
 package profile
 
+import extensions.myForEach
+
 fun main() {
-    val profiles = ProfilesRepository.profiles
+    ProfilesRepository.profiles.showEmail()
+}
+
+fun filterCollection(){
+    ProfilesRepository.profiles
         .filter { person: Person -> person.age > 25 }
         .filter { it.gender == Gender.MALE }
         .filter { it.firstName.startsWith("A") }
         .filter { it.age < 30 }
-
-    for (profile in profiles){
-        println(profile)
-    }
+        .sortedBy { it.firstName }
+        .forEach { println(it) }
 }
 
-
-
-fun <R, T> List<T>.transform(operation: (T) -> R): List<R>{
-    val result = mutableListOf<R>()
-    for (person in this){
-        result.add(operation(person))
-    }
-    return result
+fun List<Person>.showEmail(){
+    val id = readln().toInt()
+    this.find { it.id == id  }?.let { println("Email человека с ID-$id равен ${it.email}") } ?: println("Не найдено")
 }
-
 
 
 
