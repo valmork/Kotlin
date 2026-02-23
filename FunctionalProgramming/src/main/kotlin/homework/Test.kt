@@ -1,31 +1,26 @@
-package homework
-
-fun main() {
-    processStrings(listOf(" ","hello","world" ,"test","hello"," "))
-}
-/**
- * Обрабатывает коллекцию строк с использованием цепочки преобразований.
- * @param strings Коллекция строк для обработки.
- * @return Преобразованная коллекция строк.
- */
-fun processStrings(strings: List<String>): List<String> {
-    return strings.also {
-        println("Исходный список: $strings")
-    }.filter { it.isNotBlank() }.also {
-        println("Этап 1: Осталось ${it.count()} непустых строк")
-    }               // Убираем пустые строки
-        .map { it.trim() }                       // Убираем лишние пробелы
-        .filter { it.length > 3 }.also {
-            println("Этап 2: Строки длиной более 3 символов: $it")
-        }                  // Оставляем строки длиной больше 3
-        .sortedBy { it.length }.also {
-            println("Этап 3: Первые 3 строки после сортировки: ${it.take(3)}")
-        }                   // Сортируем по длине
-        .map { it.uppercase() }.also {
-            println("Этап 4: Все строки в верхнем регистре: $it")
-        }                   // Преобразуем в верхний регистр
-        .distinct()                               // Убираем дубликаты
-        .take(5).also {
-            println("Этап 5: Итоговый результат: $it")
-        }                                  // Берём первые 5 строк
-}
+//package homework
+//
+//@Serializable
+//data class User(
+//    @SerialName("id") val id: Int,
+//    @SerialName("name") val name: String,
+//    @SerialName("email") val email: String,
+//    @SerialName("age") val age: Int,
+//    @SerialName("is_active") val isActive: Boolean,
+//    @SerialName("address") val address: String,
+//    @SerialName("phone") val phone: String,
+//    @SerialName("created_at") val createdAt: String,
+//    @SerialName("updated_at") val updatedAt: String,
+//    @SerialName("role") val role: String
+//)
+//
+///**
+// * Преобразует список пользователей в Map, где ключ — `id`, а значение — объект `User`.
+// * @param users Список пользователей.
+// * @return Коллекция Map пользователей.
+// */
+//fun usersToMap(users: List<User>): Map<Int, User> {
+//    // Реализуйте функцию здесь
+//    val usersAsMap = users.associate { it.id to it }
+//    return usersAsMap
+//}
