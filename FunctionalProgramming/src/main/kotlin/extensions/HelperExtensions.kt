@@ -40,3 +40,7 @@ fun <K, V, R> Map<K, V>.transformValues(transform: (V) -> R): Map<K, R>{
     }
     return newMap
 }
+
+inline fun <T, R> myWith(element: T, block: T.() -> R): R{
+    return block(element)
+}
