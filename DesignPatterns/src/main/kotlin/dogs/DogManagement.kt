@@ -1,5 +1,7 @@
 package dogs
 
 fun main() {
-    DogsRepository.getInstance("dogs").dogs.forEach ( ::println )
+    Display().show()
+    Display().show()
+    Administrator().work()
 }

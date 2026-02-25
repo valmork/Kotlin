@@ -1,7 +1,8 @@
 package users
 
-import javax.swing.JFrame
 
 fun main() {
     Display().show()
+    Display().show()
+    Administrator().work()
 }
