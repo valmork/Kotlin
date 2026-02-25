@@ -1,15 +1,27 @@
-import kotlin.concurrent.thread
+// Ваша задача — сделать этот класс Singleton
+class SettingsManager private constructor (context: Context) : BaseManager(context) {
 
-class ThreadRunner {
-    fun runThreads(): Map<String, String> {
-        val threadInfo = mutableMapOf<String, String>()
+    private val _settings: MutableMap<String, String> = mutableMapOf()
+    val settings
+        get() = _settings.toMap()
 
-        // Добавьте в Map имя главного потока и описание его работы
 
-        // Запустите три потока, добавляя в Map имя потока и описание его работы
-
-        // Дождитесь завершения потоков, чтобы они успели записать свои имена в Map
-
-        return threadInfo
+    init {
+        _settings.putAll(context.defaultSettings)
     }
-}
+
+    fun getSetting(key: String): String? {
+        return _settings[key]
+    }
+
+    companion object{
+        private var instance: SettingsManager? = null
+
+        fun getInstance(context: Context): SettingsManager = instance ?: SettingsManager(context).also { instance = it }
+        }
+    }
+
+
+open class BaseManager(val context: Context)
+
+data class Context(val name: String, val defaultSettings: Map<String, String>)
