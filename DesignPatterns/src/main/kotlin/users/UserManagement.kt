@@ -1,5 +1,7 @@
 package users
 
+import javax.swing.JFrame
+
 fun main() {
-    UsersRepository.getInstance("qwerty").users.forEach(::println)
+    Display().show()
 }

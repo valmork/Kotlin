@@ -1,27 +1,21 @@
-// Ваша задача — сделать этот класс Singleton
-class SettingsManager private constructor (context: Context) : BaseManager(context) {
+class DatabaseConnection private constructor() {
 
-    private val _settings: MutableMap<String, String> = mutableMapOf()
-    val settings
-        get() = _settings.toMap()
+    companion object {
+        private val lock = Any()
+        private var instance: DatabaseConnection? = null
 
+        fun getInstance(): DatabaseConnection {
+            instance?.let { return it }
 
-    init {
-        _settings.putAll(context.defaultSettings)
-    }
+            synchronized(lock) {
+                instance?.let { return it }
 
-    fun getSetting(key: String): String? {
-        return _settings[key]
-    }
-
-    companion object{
-        private var instance: SettingsManager? = null
-
-        fun getInstance(context: Context): SettingsManager = instance ?: SettingsManager(context).also { instance = it }
+                return DatabaseConnection().also { instance = it }
+            }
         }
     }
 
-
-open class BaseManager(val context: Context)
-
-data class Context(val name: String, val defaultSettings: Map<String, String>)
+    fun query(sql: String): String {
+        return "Результат запроса: $sql"
+    }
+}

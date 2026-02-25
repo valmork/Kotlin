@@ -1,6 +1,7 @@
 package dogs
 
 import kotlinx.serialization.json.Json
+import users.UsersRepository
 import java.io.File
 
 class DogsRepository private constructor(){
@@ -17,15 +18,20 @@ class DogsRepository private constructor(){
         get() = _dogs.toList()
 
     companion object{
+
+        private val lock = Any()
         private  var instance: DogsRepository? = null
 
         fun getInstance(password: String): DogsRepository{
             val correctPassword = File("password_dogs.txt").readText().trim()
             if (correctPassword != password) throw IllegalArgumentException("Wrong password")
-            if (instance == null){
-                instance = DogsRepository()
+            instance?.let { return it }
+
+            synchronized(lock) {
+                instance?.let { return it }
+
+                return DogsRepository().also { instance = it }
             }
-            return instance!!
         }
     }
 }
