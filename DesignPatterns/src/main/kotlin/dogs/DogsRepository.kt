@@ -1,26 +1,38 @@
 package dogs
 
 import kotlinx.serialization.json.Json
+import observer.Observable
 import observer.Observer
 import java.io.File
 import kotlin.collections.last
 
-class DogsRepository private constructor(){
+class DogsRepository private constructor(): Observable<List<Dog>>{
 
     private val file = File("dogs.json")
 
     private val _dogs = loadAllDogs()
-    val dogs
+    override val currentValue: List<Dog>
         get() = _dogs.toList()
 
-    private val observers = mutableListOf<Observer<List<Dog>>>()
+    private val _observers = mutableListOf<Observer<List<Dog>>>()
+    override val observers
+        get() = _observers.toList()
+
+    override fun registerObserver(observer: Observer<List<Dog>>) {
+        _observers.add(observer)
+        observer.onChanged(currentValue)
+    }
+
+    override fun unregisterObserver(observer: Observer<List<Dog>>) {
+        _observers.remove(observer)
+    }
 
     private fun loadAllDogs(): MutableList<Dog>{
         return Json.decodeFromString(file.readText().trim())
     }
 
     fun addDog(dogBreed: String, dogName: String, dogWeight: Double){
-        val id = dogs.last().dogId + 1
+        val id = currentValue.last().dogId + 1
         _dogs.add(Dog(dogBreed, id, dogName, dogWeight))
         notifyObservers()
     }
@@ -36,14 +48,7 @@ class DogsRepository private constructor(){
     }
 
     fun addOnDogsChangedListener(observer: Observer<List<Dog>>){
-        observers.add(observer)
-        observer.onChanged(dogs)
-    }
-
-    private fun notifyObservers(){
-        for (observer in observers){
-            observer.onChanged(dogs)
-        }
+        registerObserver(observer)
     }
 
     companion object{
