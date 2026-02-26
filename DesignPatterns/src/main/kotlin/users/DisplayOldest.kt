@@ -7,7 +7,7 @@ import javax.swing.JFrame
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
 
-class Display{
+class DisplayOldest{
 
 
 
@@ -26,8 +26,8 @@ class Display{
             add(scrollPane)
         }
 
-        UsersRepository.getInstance("qwerty").users.registerObserver{ newValue ->
-            newValue.joinToString("\n").let { textArea.text = it }
+        UsersRepository.getInstance("qwerty").oldestUser.registerObserver{ newValue ->
+            textArea.text = "Oldest person is: $newValue"
         }
     }
 
