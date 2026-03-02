@@ -5,7 +5,6 @@ class Administrator {
     private val usersRepository = UsersRepository.getInstance("qwerty")
 
     fun work(){
-        println("Creating repository...")
 
         val operationCodes = Operation.entries
         while (true) {
@@ -31,7 +30,6 @@ class Administrator {
         }
     }
 
-
     private fun addUser(){
         print("Enter firstname: ")
         val firstName = readln()
@@ -39,12 +37,17 @@ class Administrator {
         val lastName = readln()
         print("Enter age: ")
         val age = readln().toInt()
-        usersRepository.addUser(firstName, lastName, age)
+        UsersInvoker.addCommand {
+            usersRepository.addUser(firstName, lastName, age)
+        }
     }
 
     private fun deleteUser(){
         print("Enter id: ")
         val id = readln().toInt()
-        usersRepository.deleteUser(id)
+        UsersInvoker.addCommand {
+            usersRepository.deleteUser(id)
+        }
+
     }
 }

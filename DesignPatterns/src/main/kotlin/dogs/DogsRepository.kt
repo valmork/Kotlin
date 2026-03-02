@@ -22,6 +22,7 @@ class DogsRepository private constructor(){
     }
 
     fun addDog(dogBreed: String, dogName: String, dogWeight: Double){
+        Thread.sleep(10_000)
         val id = dogsList.last().dogId + 1
         dogsList.add(Dog(dogBreed, id, dogName, dogWeight))
         _dogs.currentValue = dogsList.toList()
@@ -29,6 +30,7 @@ class DogsRepository private constructor(){
     }
 
     fun deleteDog(id: Int){
+        Thread.sleep(10_000)
         dogsList.removeIf { it.dogId == id }
         _dogs.currentValue = dogsList.toList()
     }

@@ -1,11 +1,12 @@
 package dogs
 
+import users.UsersRepository
+
 class Administrator {
 
     private val dogRepository = DogsRepository.Companion.getInstance("dogs")
 
     fun work(){
-        println("Creating repository...")
 
         val operationCodes = dogs.Operation.entries
         while (true) {
@@ -39,12 +40,18 @@ class Administrator {
         val dogName = readln()
         print("Enter weight: ")
         val dogWeight = readln().toDouble()
-        dogRepository.addDog(dogBreed, dogName, dogWeight)
+        DogsInvoker.addCommand {
+            dogRepository.addDog(dogBreed, dogName, dogWeight)
+        }
+
     }
 
     private fun deleteDog(){
         print("Enter id: ")
         val id = readln().toInt()
-        dogRepository.deleteDog(id)
+        DogsInvoker.addCommand {
+            dogRepository.deleteDog(id)
+        }
+
     }
 }

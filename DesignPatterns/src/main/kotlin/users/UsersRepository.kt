@@ -1,11 +1,18 @@
 package users
 
+import command.Command
 import kotlinx.serialization.json.Json
 import observer.MutableObservable
 import observer.Observable
 import java.io.File
+import java.util.concurrent.LinkedBlockingDeque
+import kotlin.concurrent.thread
 
 class UsersRepository private constructor() {
+
+    init {
+        println("Creating repository...")
+    }
 
     private val file = File("users.json")
 
@@ -22,6 +29,7 @@ class UsersRepository private constructor() {
     private fun loadAllUsers(): MutableList<User> = Json.decodeFromString(file.readText().trim())
 
     fun addUser(firstName: String, lastName: String, age: Int){
+        Thread.sleep(10_000)
         val id = userList.last().userId + 1
         val user = User(userId = id, age = age, firstName = firstName, lastName = lastName, email = "email", gender = "gender")
         userList.add(user)
@@ -32,6 +40,7 @@ class UsersRepository private constructor() {
     }
 
     fun deleteUser(id: Int){
+        Thread.sleep(10_000)
         userList.removeIf { it.userId == id }
         _users.currentValue = userList.toList()
         if (id == oldestUser.currentValue.userId){
