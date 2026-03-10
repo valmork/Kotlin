@@ -1,6 +1,7 @@
 package collections
 
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.MethodSource
 
@@ -110,10 +111,76 @@ class NumbersMutableListTest {
         assertFalse(list.contains(200))
     }
 
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method get invoked with wrong index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list [10]
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method get invoked with negative index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list [-10]
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method add invoked with wrong index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list.add(11, 1000)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method add invoked with negative index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list.add(-1, 100)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method remove invoked with wrong index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list.remove(12)
+        }
+    }
+
+    @ParameterizedTest
+    @MethodSource("mutableListSource")
+    fun `When method remove invoked with negative index then exception is thrown`(list: NumbersMutableList) {
+        repeat(10) {
+            list.add(it)
+        }
+        assertThrows<IndexOutOfBoundsException> {
+            list.remove(-1)
+        }
+    }
+
     companion object{
 
         @JvmStatic
-        fun mutableListSource() = listOf(NumbersArrayList())
+        fun mutableListSource() = listOf(NumbersArrayList(), NumbersLinkedList())
     }
 
 }
