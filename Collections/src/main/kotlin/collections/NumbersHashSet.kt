@@ -56,18 +56,54 @@ class NumbersHashSet : NumbersMutableSet {
     }
 
     override fun removeNumber(number: Int) {
-        TODO("Not yet implemented")
+        val position = getElementPosition(number, elements.size)
+        var existedElement = elements[position] ?: return
+        if (existedElement.item == number) {
+            elements [position] = existedElement.next
+            size--
+            return
+        } else {
+            var previous = existedElement
+            existedElement = existedElement.next ?: return
+            while (true) {
+                if (existedElement.item == number) {
+                    previous.next = existedElement.next
+                    size--
+                    return
+                } else {
+                    previous = existedElement
+                    existedElement = existedElement.next ?: return
+                }
+            }
+        }
     }
 
     override fun clear() {
         elements = arrayOfNulls<Node>(INITIAL_CAPACITY)
+        size = 0
     }
 
     override fun contains(number: Int): Boolean {
-        for (node in elements){
-            if ()
+        val position = getElementPosition(number, elements.size)
+        var existedElement = elements[position]
+        if (existedElement == null) return false
+        else {
+            while (true) {
+                if (existedElement?.item == number) return true
+                else {
+                    if (existedElement?.next == null) {
+                        return false
+                    } else {
+                        if (existedElement.next?.item == number) {
+                            return true
+                        } else {
+                            existedElement = existedElement.next
+                        }
+                    }
+                }
+            }
         }
-    }
+        }
 
     private fun getElementPosition(number: Int, arraySize: Int): Int{
         return abs(number % arraySize)
