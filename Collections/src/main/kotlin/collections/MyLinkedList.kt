@@ -1,32 +1,37 @@
 package collections
 
-class NumbersLinkedList : NumbersMutableList {
 
-    private var first: Node? = null
-    private var last: Node? = null
+class MyLinkedList<T> : MyMutableList<T> {
+
+    private var modCount = 0
+    private var first: Node<T>? = null
+    private var last: Node<T>? = null
 
     override var size: Int = 0
         private set
 
-    override fun add(number: Int) {
+    override fun add(element: T): Boolean {
+        modCount++
         val prevLast = last
-        last = Node(prevLast, number)
+        last = Node(prevLast, element)
         if (prevLast == null){
             first = last
         } else {
             prevLast.next = last
         }
         size++
+        return true
     }
 
-    override fun add(index: Int, number: Int) {
+    override fun add(index: Int, element: T) {
+        modCount++
         checkIndexForAdding(index)
         if (index == size){
-            add(number)
+            add(element)
             return
         }
         if (index == 0){
-            val node = Node(null,number, first)
+            val node = Node(null,element, first)
             first?.prev = node
             first = node
             size++
@@ -34,26 +39,26 @@ class NumbersLinkedList : NumbersMutableList {
         }
         val before = getNode(index - 1)
         val after = before.next
-        val newNode = Node(before, number, after)
+        val newNode = Node(before, element, after)
         before.next = newNode
         after?.prev = newNode
         size++
     }
 
-    override fun plus(number: Int) {
-        add(number)
+    override fun plus(element: T) {
+        add(element)
     }
 
-    override fun minus(number: Int) {
-        removeNumber(number)
+    override fun minus(element: T) {
+        removeNumber(element)
     }
 
-    override fun get(index: Int): Int {
+    override fun get(index: Int): T {
         checkIndex(index)
         return getNode(index).item
     }
 
-    private fun getNode(index: Int): Node{
+    private fun getNode(index: Int): Node<T>{
         if (index == 0) return first!!
         if (index == size - 1) return last!!
 
@@ -75,12 +80,14 @@ class NumbersLinkedList : NumbersMutableList {
     }
 
     override fun remove(index: Int) {
+        modCount++
         checkIndex(index)
         val node = getNode(index)
         unlink(node)
     }
 
-    private fun unlink(node: Node){
+    private fun unlink(node: Node<T>){
+        modCount++
         val before = node.prev
         val after = node.next
         before?.next = after
@@ -94,10 +101,11 @@ class NumbersLinkedList : NumbersMutableList {
         size--
     }
 
-    override fun removeNumber(number: Int) {
+    override fun removeNumber(element: T) {
+        modCount++
         var node = first
         repeat(size){
-            if (node?.item == number){
+            if (node?.item == element){
                 node?.let { unlink(it) }
                 return
             } else {
@@ -107,15 +115,16 @@ class NumbersLinkedList : NumbersMutableList {
     }
 
     override fun clear() {
+        modCount++
         first = null
         last = null
         size = 0
     }
 
-    override fun contains(number: Int): Boolean {
+    override fun contains(element: T): Boolean {
         var node = first
         repeat(size){
-            if (node?.item == number){
+            if (node?.item == element){
                 return true
             } else {
                 node = node?.next
@@ -136,9 +145,32 @@ class NumbersLinkedList : NumbersMutableList {
         }
     }
 
-    class Node(
-        var prev: Node?  = null,
-        val item: Int,
-        var next: Node? = null
+    override fun iterator(): MutableIterator<T> {
+        return object : MutableIterator<T>{
+
+            private val currentModCount = modCount
+            private var nextNode = first
+
+            override fun hasNext(): Boolean {
+                return nextNode != null
+            }
+
+            override fun next(): T {
+                if (currentModCount != modCount) throw ConcurrentModificationException()
+                return nextNode?.item!!.also {
+                    nextNode = nextNode?.next
+                }
+            }
+
+            override fun remove() {
+                TODO("Not yet implemented")
+            }
+        }
+    }
+
+    class Node<T>(
+        var prev: Node<T>?  = null,
+        val item: T,
+        var next: Node<T>? = null
     )
 }

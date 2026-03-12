@@ -5,9 +5,9 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class NumbersHashSetTest {
+class MyHashSetTest {
 
-    private val numbers = NumbersHashSet()
+    private val numbers = MyHashSet<Int>()
 
     @Test
     fun `When added 100 elements then size is 100`() {
