@@ -1,15 +1,12 @@
 package collections
 
-class Item(
-    val value: Int
-) {
+data class Item(val value: Int): Comparable<Item> {
 
-    override fun hashCode(): Int {
-        return value
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other !is Item) return false
-        return value == other.value
+    override fun compareTo(other: Item): Int {
+        return when {
+            value > other.value -> 1
+            value < other.value -> -1
+            else -> 0
+        }
     }
 }
