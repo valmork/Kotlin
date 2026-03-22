@@ -1,28 +1,12 @@
-package coroutines
+package concurrency
 
-import entities.Author
 import entities.Book
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.awt.event.WindowListener
-import javax.swing.JButton
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JTextArea
-import javax.swing.WindowConstants.EXIT_ON_CLOSE
-import kotlin.concurrent.thread
+import javax.swing.*
 
 object Display {
 
@@ -34,20 +18,26 @@ object Display {
 
     private val loadButton = JButton("Load Book").apply {
         addActionListener {
-            scope.launch {
-                isEnabled = false
-                infoArea.text = "Loading information...\n"
-                val book = loadBook()
-                println("Loaded: $book")
-                infoArea.append("Book: ${book.title}\nYear: ${book.year}\nGenre: ${book.genre}\n")
-                infoArea.append("Loading author information...\n")
-                val author = loadAuthor(book)
-                println("Loaded: $author")
-                infoArea.append("Author: ${author.name}\nBiography: ${author.bio}\n")
-                isEnabled = true
-                }
+            isEnabled = false
+            infoArea.text = "Loading information...\n"
+
+            val jobs = mutableListOf<Deferred<Book>>()
+            repeat(10) {
+                scope.async {
+                    val book = loadBook()
+                    infoArea.append("Book: ${book.title}\nYear: ${book.year}\nGenre: ${book.genre}\n")
+                    book
+                }.also { jobs.add(it) }
             }
+            scope.launch {
+                val books = jobs.awaitAll()
+                println(books.joinToString(", "))
+                isEnabled = true
+            }
+
+
         }
+    }
     private val timerLabel = JLabel("Time : 00:00")
     private val topPanel = JPanel(BorderLayout()).apply {
         add(timerLabel, BorderLayout.WEST)
@@ -82,27 +72,19 @@ object Display {
 
     }
 
-    private suspend fun loadAuthor(book: Book): Author {
-        return withContext(Dispatchers.Default){
-            longOperation()
-            Author("George Orwell", "British writer and journalist")
-        }
-
-    }
-
     fun show(){
         mainFrame.isVisible = true
         startTimer()
     }
 
     private fun startTimer(){
-        thread {
+        scope.launch {
             var totalSeconds = 0
             while (true) {
                 val minutes = totalSeconds / 60
                 val seconds = totalSeconds % 60
                 timerLabel.text = String.format("Time : %02d:%02d", minutes, seconds)
-                Thread.sleep(1000)
+                delay(1000)
                 totalSeconds++
             }
         }
