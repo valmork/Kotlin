@@ -2,6 +2,9 @@ package coroutinesFromCallbacks
 
 import entities.Author
 import entities.Book
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.JButton
@@ -11,8 +14,11 @@ import javax.swing.JPanel
 import javax.swing.JScrollPane
 import javax.swing.JTextArea
 import kotlin.concurrent.thread
+import kotlin.coroutines.suspendCoroutine
 
 object Display {
+
+    private val scope = CoroutineScope(Dispatchers.Default)
 
     private val infoArea = JTextArea().apply {
         isEditable = false
@@ -20,16 +26,18 @@ object Display {
 
     private val loadButton = JButton("Load Book").apply {
         addActionListener {
-            isEnabled = false
-            infoArea.text = "Loading information...\n"
-            loadBook{book ->
+            scope.launch {
+                isEnabled = false
+                infoArea.text = "Loading information...\n"
+                val book = loadBook()
                 infoArea.append("Book: ${book.title}\nYear: ${book.year}\nGenre: ${book.genre}\n")
                 infoArea.append("Loading author information...\n")
-                loadAuthor(book){author ->
-                    infoArea.append("Author: ${author.name}\nBiography: ${author.bio}\n")
-                    isEnabled = true
-                }
+                val author = loadAuthor(book)
+                infoArea.append("Author: ${author.name}\nBiography: ${author.bio}\n")
+                isEnabled = true
+
             }
+
         }
     }
     private val timerLabel = JLabel("Time : 00:00")
@@ -43,6 +51,22 @@ object Display {
         add(topPanel, BorderLayout.NORTH)
         add(JScrollPane(infoArea), BorderLayout.CENTER)
         size = Dimension(400, 300)
+    }
+
+    private suspend fun loadBook(): Book {
+        return suspendCoroutine<Book>{ continuation ->
+            loadBook { book ->
+                continuation.resumeWith(Result.success(book))
+            }
+        }
+    }
+
+    private suspend fun loadAuthor(book: Book): Author {
+        return suspendCoroutine { continuation ->
+            loadAuthor(book){ author ->
+                continuation.resumeWith(Result.success(author))
+            }
+        }
     }
 
     private fun loadBook(callback: (Book) -> Unit) {
