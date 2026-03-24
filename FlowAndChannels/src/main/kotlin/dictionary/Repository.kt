@@ -19,7 +19,7 @@ object Repository {
 
     private val json = Json { ignoreUnknownKeys = true }
 
-    suspend fun loadDefinition(word: String): String {
+    suspend fun loadDefinition(word: String): List<String> {
         return withContext(Dispatchers.IO) {
             var connection: HttpURLConnection? = null
             try {
@@ -29,28 +29,32 @@ object Repository {
                     addRequestProperty(HEADER_KEY, API_KEY)
                 }
                 val response = connection.getInputStream().bufferedReader().readText()
-                json.decodeFromString<Definition>(response).definition
+                json.decodeFromString<Definition>(response).mapDefinitionToList()
             } catch (e: Exception) {
-                ""
+                listOf()
             } finally {
                 connection?.disconnect()
             }
         }
 
     }
+
+    private fun Definition.mapDefinitionToList(): List<String> {
+        return this.definition.split(Regex("\\d\\. ")).map { it.trim() }.filter { it.isNotEmpty() }
+    }
 }
 
 private val dispatcher = Executors.newCachedThreadPool().asCoroutineDispatcher()
 private val scope = CoroutineScope(dispatcher)
 
-fun main() {
-    scope.launch {
-        while (true) {
-            println("Enter word: ")
-            val word = readln()
-            val definition = Repository.loadDefinition(word)
-            println(definition)
-        }
-    }
-
-}
+//fun main() {
+//    scope.launch {
+//        while (true) {
+//            println("Enter word: ")
+//            val word = readln()
+//            val definition = Repository.loadDefinition(word)
+//            println(definition)
+//        }
+//    }
+//
+//}
