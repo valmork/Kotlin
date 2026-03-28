@@ -5,10 +5,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
@@ -16,6 +20,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.retry
 import kotlinx.coroutines.launch
 import java.awt.BorderLayout
 import java.awt.event.KeyAdapter
@@ -32,7 +39,8 @@ import javax.swing.JTextField
 @OptIn(FlowPreview::class)
 object Display {
 
-    private val queries = Channel<String>()
+    private val queries = MutableSharedFlow<String>()
+    val state = MutableStateFlow<ScreenState>(ScreenState.Initial)
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val repository = Repository
@@ -70,7 +78,7 @@ object Display {
 
     private fun loadDefinitions() {
         scope.launch {
-            queries.send(searchField.text.trim())
+            queries.emit(searchField.text.trim())
         }
     }
 
@@ -79,22 +87,63 @@ object Display {
     }
 
     init {
-        queries.consumeAsFlow()
-            .onEach {
-            searchButton.isEnabled = false
-            resultArea.text = "Loading..."
+        queries.onEach {
+            state.emit(ScreenState.Loading)
             }.debounce(500)
             .map {
-                repository.loadDefinition(it)
-            }.map {
-                it.joinToString("\n\n").ifEmpty { "Not found" }
-            }.onEach {
-                resultArea.text = it
-                searchButton.isEnabled = true
-            }.launchIn(scope)
+                if (it.isEmpty()) {
+                    state.emit(ScreenState.Initial)
+                } else {
+                    val result = repository.loadDefinition(it)
+                    if (result.isEmpty()) {
+                        state.emit(ScreenState.NotFound)
+                    } else {
+                        state.emit(ScreenState.DefinitionsLoaded(result))
+                    }
+                }
+            }
+            .retry {
+                state.emit(ScreenState.Error)
+                true
+            }
+            .launchIn(scope)
+
+        state.onEach {
+                when(it) {
+                    is ScreenState.DefinitionsLoaded -> {
+                        resultArea.text = it.definitions.joinToString("\n\n")
+                        searchButton.isEnabled = true
+                    }
+                    ScreenState.Initial -> {
+                        resultArea.text = ""
+                        searchButton.isEnabled = false
+                    }
+                    ScreenState.Loading -> {
+                        resultArea.text = "Loading..."
+                        searchButton.isEnabled = false
+                    }
+                    ScreenState.NotFound -> {
+                        resultArea.text = "Not found"
+                        searchButton.isEnabled = true
+                    }
+
+                    ScreenState.Error -> {
+                        resultArea.text = "Something went wrong"
+                        searchButton.isEnabled = true
+                    }
+                }
+            }
+            .launchIn(scope)
     }
 }
 
 fun main() {
     Display.show()
+    CoroutineScope(Dispatchers.IO).launch {
+        delay(10_000)
+        println("Seconds subscriber")
+        Display.state.collect {
+            println(it)
+        }
+    }
 }
