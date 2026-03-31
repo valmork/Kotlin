@@ -1,5 +1,6 @@
 package delegates
 
+import properties.encrypted
 import kotlin.io.encoding.Base64
 import kotlin.properties.Delegates
 import kotlin.properties.ReadWriteProperty
@@ -41,26 +42,5 @@ class ObservableProperty<T> (
         val oldValue = currentValue
         currentValue = value
         onChanged(oldValue, value)
-    }
-}
-
-fun encrypted() = EncryptedProperty()
-
-class EncryptedProperty(): ReadWriteProperty<Any, String> {
-
-    private var encryptedValue: String = ""
-
-    override fun getValue(thisRef: Any, property: KProperty<*>): String {
-        println("Getting value, encoded: $encryptedValue")
-        val decoded = String(Base64.decode(encryptedValue))
-        println("Getting value, decoded: $decoded")
-        return decoded
-    }
-
-    override fun setValue(thisRef: Any, property: KProperty<*>, value: String) {
-        println("New value: $value")
-        val encoded = Base64.encode(value.toByteArray())
-        println("Encoded value: $encoded")
-        encryptedValue = encoded
     }
 }
